@@ -34,7 +34,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          xmake build RobinStackKiller -y
+         xmake build RobinStackKiller
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Collect DLL
