@@ -1,0 +1,9 @@
+RobinStackKiller source is provided under GPL-3.0-or-later.
+
+It links against CommonLibSF. CommonLibSF is licensed GPL-3.0-or-later
+WITH its Modding Exception and GPL linking exception. If you distribute a
+binary built against CommonLibSF, follow CommonLibSF's corresponding-source
+requirements and include the applicable CommonLibSF license/exception files.
+
+CommonLibSF project:
+https://github.com/libxse/commonlibsf
