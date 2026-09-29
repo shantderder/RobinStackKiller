@@ -1,0 +1,53 @@
+name: Build RobinStackKiller
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup XMake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      - name: Clone CommonLibSF
+        shell: pwsh
+        run: |
+          git clone --recurse-submodules https://github.com/libxse/commonlibsf.git lib/commonlibsf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          xmake f -m releasedbg -a x64 -y
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build
+        shell: pwsh
+        run: |
+          xmake build RobinStackKiller -y
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Collect DLL
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $dll = Get-ChildItem -Path . -Recurse -Filter RobinStackKiller.dll | Select-Object -First 1
+          if (-not $dll) { throw "RobinStackKiller.dll was not produced." }
+          Copy-Item $dll.FullName dist/RobinStackKiller.dll
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: RobinStackKiller
+          path: dist/RobinStackKiller.dll
+          if-no-files-found: error
